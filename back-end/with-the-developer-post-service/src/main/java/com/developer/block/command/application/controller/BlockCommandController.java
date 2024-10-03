@@ -1,14 +1,11 @@
 package com.developer.block.command.application.controller;
 
 import com.developer.block.command.application.service.BlockCommandService;
-import com.developer.client.UserServiceClient;
 import com.developer.common.success.SuccessCode;
+import com.developer.config.TokenDecoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class BlockCommandController {
 
     private final BlockCommandService blockCommandService;
-    private final UserServiceClient userServiceClient;
+    private final TokenDecoder tokenDecoder;
 
     @PostMapping("/block")
-    public ResponseEntity<SuccessCode> blockUser(@RequestBody Long blockedCode) {
-        Long loginUser = userServiceClient.responseUserCode();
+    public ResponseEntity<SuccessCode> blockUser(@RequestHeader("Authorization") String token, @RequestBody Long blockedCode) {
+        Long loginUser = tokenDecoder.getUserCodeFromToken(token);
 
         blockCommandService.blockUser(loginUser, blockedCode);
 
@@ -28,8 +25,8 @@ public class BlockCommandController {
     }
 
     @PostMapping("/unblock")
-    public ResponseEntity<SuccessCode> unblockUser(@RequestBody Long blockedCode) {
-        Long loginUser = userServiceClient.responseUserCode();
+    public ResponseEntity<SuccessCode> unblockUser(@RequestHeader("Authorization") String token, @RequestBody Long blockedCode) {
+        Long loginUser = tokenDecoder.getUserCodeFromToken(token);
 
         blockCommandService.unblockUser(loginUser, blockedCode);
 

@@ -9,8 +9,6 @@ import com.developer.msg.command.domain.aggregate.ReqMsg;
 import com.developer.msg.command.domain.aggregate.ResMsg;
 import com.developer.msg.command.domain.repository.ReqMsgRepository;
 import com.developer.msg.command.domain.repository.ResMsgRepository;
-//import com.developer.noti.command.application.dto.NotiMsgCreateDTO;
-//import com.developer.noti.command.application.service.NotiCommandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +19,14 @@ public class MessageCommandService {
 
     private final ReqMsgRepository reqMsgRepository;
     private final ResMsgRepository resMsgRepository;
-    private final UserServiceClient userServiceClient;
     private final BlockedUserRepository blockedUserRepository;
+    private final UserServiceClient userServiceClient;
 
     @Transactional
     public Long sendMessage(MessageRequestDTO messageRequestDTO, Long userCode) {
+        if (!userServiceClient.userCheck(messageRequestDTO.getRecipientUserCode())) {
+            throw new CustomException(ErrorCode.NOT_FOUND_USER);
+        }
 
         if (userCode.equals(messageRequestDTO.getRecipientUserCode())) {
             throw new CustomException(ErrorCode.NO_VALID_MESSAGE_USER);
@@ -44,16 +45,6 @@ public class MessageCommandService {
                 .userCode(messageRequestDTO.getRecipientUserCode())
                 .build();
         resMsgRepository.save(resMsg);
-
-//        // 알림 생성 (메세지 코드, 보낸사람 유저코드, 받은사람 유저코드)
-//        NotiMsgCreateDTO notiMsgCreateDTO=
-//                new NotiMsgCreateDTO(
-//                        resMsg.getMsgCode()
-//                        , reqMsg.getUserCode()
-//                        , resMsg.getMsgCode()
-//                );
-//
-//        notiCommandService.addMsgEvent(notiMsgCreateDTO);
 
         return reqMsg.getMsgCode();
     }
