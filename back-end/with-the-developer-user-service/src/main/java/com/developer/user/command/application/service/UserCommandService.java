@@ -308,5 +308,7 @@ public class UserCommandService {
         return LocalDate.parse(dateString, dateFormat);
     }
 
-
+    public boolean existsUserByUserCode(Long userCode){
+        return userRepository.existsById(userCode);
+    }
 }

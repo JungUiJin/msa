@@ -1,9 +1,5 @@
 package com.developer.config;
 
-//
-//import com.developer.common.jwt.JwtFilter;
-//import com.developer.common.jwt.TokenProvider;
-//import com.developer.user.query.service.BlackListQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,9 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -21,11 +15,6 @@ public class SecurityConfig {
 
 //    private final TokenProvider tokenProvider;
 //    private final BlackListQueryService blackListQueryService;
-
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -41,7 +30,7 @@ public class SecurityConfig {
                 //HTTP Basic 인증 방식 disable
                 .httpBasic(AbstractHttpConfigurer::disable)
 
-                        .headers((headers) -> headers
+                .headers((headers) -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
 
                 // JWT 사용을 위해 세션 사용 X (상태 유지 X)
@@ -62,9 +51,8 @@ public class SecurityConfig {
         http.logout(AbstractHttpConfigurer::disable);
         http.formLogin((AbstractHttpConfigurer::disable));
 
-//        // JWT 필터 추가
+        // JWT 필터 추가
 //        http.addFilterBefore(new JwtFilter(tokenProvider, blackListQueryService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 }

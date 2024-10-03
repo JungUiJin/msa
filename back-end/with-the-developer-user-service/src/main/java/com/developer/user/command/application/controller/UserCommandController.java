@@ -164,4 +164,10 @@ public class UserCommandController {
     public Long responseUserCode(){
         return SecurityUtil.getCurrentUserCode();
     }
+
+    // 유저 존재 유무 확인
+    @GetMapping("/user-check/{userCode}")
+    public ResponseEntity<Boolean> userCheck(@PathVariable Long userCode){
+        return ResponseEntity.ok(userService.existsUserByUserCode(userCode));
+    }
 }
